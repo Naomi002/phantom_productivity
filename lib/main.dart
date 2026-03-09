@@ -34,14 +34,34 @@ class _DashboardState extends State<Dashboard> {
   int _seconds = 1500; 
   Timer? _timer;
   bool _isActive = false;
+  
+  // New Identity State
+  int _avatarIndex = 0;
+  final List<IconData> _phantomStyles = [
+    Icons.blur_on,
+    Icons.wb_sunny_outlined,
+    Icons.all_inclusive,
+    Icons.auto_awesome,
+  ];
 
-  // Professional Data Structure for Ghosts
   final List<Map<String, String>> _onlineGhosts = [
     {"name": "Phantom_Alpha", "status": "Deep Focus"},
     {"name": "Ghost_User_99", "status": "Steady"},
     {"name": "Nawrose_Dev", "status": "Coding..."},
     {"name": "Shadow_Student", "status": "Reading"},
   ];
+
+  void _cycleAvatar() {
+    setState(() {
+      _avatarIndex = (_avatarIndex + 1) % _phantomStyles.length;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Phantom Style Updated! ✨"),
+        duration: Duration(milliseconds: 500),
+      ),
+    );
+  }
 
   void _toggleTimer() {
     if (_isActive) {
@@ -63,14 +83,12 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  // Expert UI: SnackBar notification for interaction
   void _sendPulse(String name) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: Colors.cyanAccent,
         content: Text("Motivation Pulse sent to $name! ⚡", 
           style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -107,15 +125,22 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       body: Row(
         children: [
-          // MAIN FOCUS AREA
           Expanded(
             flex: 3,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.blur_on, size: 80, color: Colors.cyanAccent),
+                // INTERACTIVE AVATAR
+                GestureDetector(
+                  onTap: _cycleAvatar,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Icon(_phantomStyles[_avatarIndex], size: 100, color: Colors.cyanAccent),
+                  ),
+                ),
                 const SizedBox(height: 10),
                 const Text("PHANTOMS", style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 8, color: Colors.cyanAccent)),
+                const Text("Tap icon to change your Phantom style", style: TextStyle(color: Colors.white24, fontSize: 10)),
                 const SizedBox(height: 50),
                 Text(
                   "${(_seconds ~/ 60).toString().padLeft(2, '0')}:${(_seconds % 60).toString().padLeft(2, '0')}",
@@ -134,11 +159,7 @@ class _DashboardState extends State<Dashboard> {
               ],
             ),
           ),
-          
-          // SEPARATOR LINE
           Container(width: 0.5, color: Colors.white10),
-          
-          // INTERACTIVE GHOST SIDEBAR
           Expanded(
             flex: 1,
             child: Container(
@@ -155,7 +176,7 @@ class _DashboardState extends State<Dashboard> {
                       itemBuilder: (context, index) {
                         final ghost = _onlineGhosts[index];
                         return ListTile(
-                          onTap: () => _sendPulse(ghost['name']!), // INTERACTION
+                          onTap: () => _sendPulse(ghost['name']!),
                           leading: const CircleAvatar(
                             backgroundColor: Colors.white10,
                             child: Icon(Icons.person_outline, size: 20, color: Colors.white30),
