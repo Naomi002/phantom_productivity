@@ -16,7 +16,7 @@ class PhantomApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         // The "Millionaire" Aesthetic: Deep Space Black
-        scaffoldBackgroundColor: const Color(0xFF0B0E14), 
+        scaffoldBackgroundColor: const Color(0xFF0B0E14),
         useMaterial3: true,
       ),
       home: const Dashboard(),
@@ -32,7 +32,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  // Timer State Variables
   int _seconds = 1500; // 25 minutes default
   Timer? _timer;
   bool _isActive = false;
@@ -51,10 +50,44 @@ class _DashboardState extends State<Dashboard> {
           } else {
             _timer?.cancel();
             _isActive = false;
+            _showRewardDialog(); // Trigger the reward when time is up
           }
         });
       });
     }
+  }
+
+  // Expert Feature: Professional Reward Popup
+  void _showRewardDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // User must interact to close
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1E293B),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text("Session Complete! 👻",
+              style: TextStyle(
+                  color: Colors.cyanAccent, fontWeight: FontWeight.bold)),
+          content: const Text(
+            "Your Phantom has gained +10 Focus Energy. You're building a millionaire mindset, Nabila.",
+            style: TextStyle(color: Colors.white70),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() => _seconds = 1500); // Reset for the next session
+              },
+              child: const Text("COLLECT ENERGY",
+                  style: TextStyle(
+                      color: Colors.cyanAccent, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Formatting the time display (00:00)
@@ -66,7 +99,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Prevents the app from crashing in the background
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -83,8 +116,8 @@ class _DashboardState extends State<Dashboard> {
             const Text(
               "PHANTOMS",
               style: TextStyle(
-                fontSize: 32, 
-                fontWeight: FontWeight.w900, 
+                fontSize: 32,
+                fontWeight: FontWeight.w900,
                 letterSpacing: 8,
                 color: Colors.cyanAccent,
               ),
@@ -94,35 +127,35 @@ class _DashboardState extends State<Dashboard> {
               style: TextStyle(color: Colors.white38, letterSpacing: 2),
             ),
             const SizedBox(height: 60),
-            
+
             // The Big Real-Time Timer
             Text(
               _formattedTime,
               style: const TextStyle(
-                fontSize: 100, 
-                fontWeight: FontWeight.w100, 
-                color: Colors.white
-              ),
+                  fontSize: 100,
+                  fontWeight: FontWeight.w100,
+                  color: Colors.white),
             ),
-            
+
             const SizedBox(height: 40),
-            
+
             // Interactive Focus Button
             ElevatedButton(
               onPressed: _toggleTimer,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.cyanAccent.withOpacity(0.1),
                 side: const BorderSide(color: Colors.cyanAccent, width: 0.5),
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
               ),
               child: Text(
                 _isActive ? "PAUSE SESSION" : "START FOCUSING",
                 style: const TextStyle(
-                  color: Colors.cyanAccent, 
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.5
-                ),
+                    color: Colors.cyanAccent,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5),
               ),
             ),
           ],
