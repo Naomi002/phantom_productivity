@@ -94,7 +94,7 @@ class _DashboardState extends State<Dashboard> {
             subtitle: Text(g['status']!, style: const TextStyle(fontSize: 9, color: Colors.cyanAccent)),
           )).toList()),
 
-          // CENTER: MAIN TIMER
+          // CENTER: MAIN TIMER AREA
           Expanded(
             flex: 3,
             child: Column(
@@ -110,7 +110,7 @@ class _DashboardState extends State<Dashboard> {
                 const Text("PHANTOMS", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 8, color: Colors.cyanAccent)),
                 const SizedBox(height: 60),
                 
-                // PROGRESS RING AROUND TIMER
+                // PROGRESS RING
                 Stack(
                   alignment: Alignment.center,
                   children: [
