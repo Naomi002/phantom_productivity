@@ -26,18 +26,26 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  // Timer State
   int _seconds = 1500; 
   Timer? _timer;
   bool _isActive = false;
-  int _avatarIndex = 0;
-  final List<String> _history = [];
   
-  // Style list for your Phantom logo
+  // Customization State
+  int _avatarIndex = 0;
   final List<IconData> _phantomStyles = [
     Icons.blur_on, 
     Icons.wb_sunny_outlined, 
     Icons.all_inclusive, 
-    Icons.auto_awesome
+    Icons.auto_awesome_mosaic
+  ];
+
+  // History & Social State
+  final List<String> _history = [];
+  final List<Map<String, String>> _onlineGhosts = [
+    {"name": "Phantom_Alpha", "status": "Deep Focus"},
+    {"name": "Nawrose_Dev", "status": "Coding..."},
+    {"name": "Ghost_99", "status": "Steady"},
   ];
 
   void _toggleSession() {
@@ -61,7 +69,7 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       _isActive = false;
       _seconds = 1500;
-      _history.insert(0, "Completed @ ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}");
+      _history.insert(0, "Focus Sprint Done @ ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}");
     });
   }
 
@@ -73,25 +81,53 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    double progress = (1500 - _seconds) / 1500;
     String timeStr = "${(_seconds ~/ 60).toString().padLeft(2, '0')}:${(_seconds % 60).toString().padLeft(2, '0')}";
 
     return Scaffold(
       body: Row(
         children: [
-          // LEFT: MAIN FOCUS AREA
+          // LEFT SIDEBAR: GHOSTS
+          _buildSidebar("LIVE GHOSTS", _onlineGhosts.map((g) => ListTile(
+            leading: const Icon(Icons.person_outline, size: 16, color: Colors.white30),
+            title: Text(g['name']!, style: const TextStyle(fontSize: 12, color: Colors.white70)),
+            subtitle: Text(g['status']!, style: const TextStyle(fontSize: 9, color: Colors.cyanAccent)),
+          )).toList()),
+
+          // CENTER: MAIN TIMER
           Expanded(
             flex: 3,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // TAP THE LOGO TO CHANGE STYLE
                 GestureDetector(
                   onTap: () => setState(() => _avatarIndex = (_avatarIndex + 1) % _phantomStyles.length),
-                  child: Icon(_phantomStyles[_avatarIndex], size: 80, color: Colors.cyanAccent),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    child: Icon(_phantomStyles[_avatarIndex], size: 80, color: Colors.cyanAccent),
+                  ),
                 ),
                 const Text("PHANTOMS", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 8, color: Colors.cyanAccent)),
                 const SizedBox(height: 60),
-                Text(timeStr, style: const TextStyle(fontSize: 120, fontWeight: FontWeight.w100, color: Colors.white)),
+                
+                // PROGRESS RING AROUND TIMER
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      height: 300,
+                      width: 300,
+                      child: CircularProgressIndicator(
+                        value: progress,
+                        strokeWidth: 4,
+                        backgroundColor: Colors.white10,
+                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.cyanAccent),
+                      ),
+                    ),
+                    Text(timeStr, style: const TextStyle(fontSize: 100, fontWeight: FontWeight.w100)),
+                  ],
+                ),
+                
                 const SizedBox(height: 60),
                 ElevatedButton(
                   onPressed: _toggleSession,
@@ -107,35 +143,26 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
           
-          Container(width: 0.5, color: Colors.white10),
+          // RIGHT SIDEBAR: HISTORY
+          _buildSidebar("HISTORY", _history.map((h) => ListTile(
+            title: Text(h, style: const TextStyle(fontSize: 11, color: Colors.white24)),
+          )).toList()),
+        ],
+      ),
+    );
+  }
 
-          // RIGHT: GHOSTS & HISTORY SIDEBAR
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: const Color(0xFF0F172A),
-              child: Column(
-                children: [
-                  const Padding(padding: EdgeInsets.all(20), child: Text("LIVE GHOSTS", style: TextStyle(color: Colors.cyanAccent, fontSize: 10, letterSpacing: 2))),
-                  const ListTile(
-                    leading: Icon(Icons.person_outline, size: 16, color: Colors.white30),
-                    title: Text("Phantom_Alpha", style: TextStyle(fontSize: 12, color: Colors.white70)),
-                    subtitle: Text("Deep Focus", style: TextStyle(fontSize: 9, color: Colors.cyanAccent)),
-                  ),
-                  const Divider(color: Colors.white10),
-                  const Padding(padding: EdgeInsets.all(20), child: Text("HISTORY", style: TextStyle(color: Colors.white24, fontSize: 10, letterSpacing: 2))),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _history.length,
-                      itemBuilder: (context, i) => ListTile(
-                        title: Text(_history[i], style: const TextStyle(fontSize: 11, color: Colors.white24)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+  Widget _buildSidebar(String title, List<Widget> items) {
+    return Container(
+      width: 250,
+      color: const Color(0xFF0F172A),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(30),
+            child: Text(title, style: const TextStyle(color: Colors.cyanAccent, fontSize: 10, letterSpacing: 2, fontWeight: FontWeight.bold)),
           ),
+          Expanded(child: ListView(children: items)),
         ],
       ),
     );
