@@ -1,25 +1,25 @@
-# 👻 Phantoms: Presence Without Pressure
+# Phantoms
 
-**Phantoms** is a real-time, cross-platform productivity hub designed for a generation that struggles with digital burnout and isolation. Unlike traditional timers, Phantoms uses "Body Doubling" mechanics to provide social accountability without the pressure of video calls.
+A minimalist focus dashboard designed for deep work. Instead of loud notifications and cluttered interfaces, **Phantoms** uses a clean, dark aesthetic and subtle visual cues to help you stay in the flow.
 
-## 🚀 The Vision
-To create a "Global Study Hall" where users are represented by minimalist silhouettes (Phantoms), allowing for collective focus in a gamified, "Dark Mode" aesthetic.
+## The Vibe
+I built this because most productivity timers are either too distracting or too ugly. Phantoms is built on a "dark mode first" philosophy. It’s meant to sit on a second monitor or a corner of your screen—keeping you on track without shouting for your attention.
 
-## 🛠 Tech Stack
-* **Frontend:** Flutter (Dart) for high-performance, cross-platform UI.
-* **State Management:** Stateful Widgets (Moving to Provider/Riverpod for scale).
-* **Logic:** Real-time asynchronous timers and stream-based architecture.
-* **Version Control:** Git & GitHub with professional semantic commit history.
 
-## 📱 Features
-- [x] **Deep Focus Dashboard:** Minimalist UI to reduce cognitive load.
-- [x] **Real-Time Engine:** High-precision countdown timer with background lifecycle management.
-- [ ] **Ghost Sync:** (In Progress) Real-time presence indicators via Firebase.
-- [ ] **Focus Garden:** Visual rewards for completed deep-work sessions.
 
-## 👨‍💻 Installation for Developers
+## Key Features
+* **Visual Tempo:** A glowing cyan progress ring that fills as you work, giving you a sense of momentum without needing to stare at ticking numbers.
+* **The Phantom Logo:** An interactive centerpiece. Tap/Click the logo to cycle through different visual styles depending on your mood.
+* **Live Ghost List:** A sidebar that makes deep work feel less lonely. It mimics a live environment of other "Phantoms" currently in focus mode.
+* **Session History:** Automatically logs your completed sprints so you can look back at your daily wins.
+* **Zero-Distraction Visuals:** Intentionally focused on visual feedback to avoid browser-autoplay headaches and keep the focus purely on the work.
+
+## Built With
+* **Flutter** (Web)
+* **Dart**
+* **Material 3 Design**
+
+## How to Run It
+If you have Flutter installed, just clone this and run:
 ```bash
-git clone [https://github.com/Naomi002/phantom_productivity.git](https://github.com/Naomi002/phantom_productivity.git)
-cd phantom_productivity
-flutter pub get
-flutter run
+flutter run -d chrome
