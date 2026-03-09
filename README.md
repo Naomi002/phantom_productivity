@@ -1,16 +1,25 @@
-# phantom_productivity
+# 👻 Phantoms: Presence Without Pressure
 
-A new Flutter project.
+**Phantoms** is a real-time, cross-platform productivity hub designed for a generation that struggles with digital burnout and isolation. Unlike traditional timers, Phantoms uses "Body Doubling" mechanics to provide social accountability without the pressure of video calls.
 
-## Getting Started
+## 🚀 The Vision
+To create a "Global Study Hall" where users are represented by minimalist silhouettes (Phantoms), allowing for collective focus in a gamified, "Dark Mode" aesthetic.
 
-This project is a starting point for a Flutter application.
+## 🛠 Tech Stack
+* **Frontend:** Flutter (Dart) for high-performance, cross-platform UI.
+* **State Management:** Stateful Widgets (Moving to Provider/Riverpod for scale).
+* **Logic:** Real-time asynchronous timers and stream-based architecture.
+* **Version Control:** Git & GitHub with professional semantic commit history.
 
-A few resources to get you started if this is your first Flutter project:
+## 📱 Features
+- [x] **Deep Focus Dashboard:** Minimalist UI to reduce cognitive load.
+- [x] **Real-Time Engine:** High-precision countdown timer with background lifecycle management.
+- [ ] **Ghost Sync:** (In Progress) Real-time presence indicators via Firebase.
+- [ ] **Focus Garden:** Visual rewards for completed deep-work sessions.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 👨‍💻 Installation for Developers
+```bash
+git clone [https://github.com/Naomi002/phantom_productivity.git](https://github.com/Naomi002/phantom_productivity.git)
+cd phantom_productivity
+flutter pub get
+flutter run
