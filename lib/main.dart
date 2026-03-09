@@ -25,19 +25,19 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
-class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMixin {
+class _DashboardState extends State<Dashboard> {
   int _seconds = 1500; 
   Timer? _timer;
   bool _isActive = false;
   int _avatarIndex = 0;
   final List<String> _history = [];
   
-  // Visual Styles for your changing logo
+  // Style list for your Phantom logo
   final List<IconData> _phantomStyles = [
     Icons.blur_on, 
     Icons.wb_sunny_outlined, 
     Icons.all_inclusive, 
-    Icons.auto_awesome_mosaic
+    Icons.auto_awesome
   ];
 
   void _toggleSession() {
@@ -61,7 +61,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
     setState(() {
       _isActive = false;
       _seconds = 1500;
-      _history.insert(0, "Focus Sprint Done @ ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}");
+      _history.insert(0, "Completed @ ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}");
     });
   }
 
@@ -78,34 +78,21 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
     return Scaffold(
       body: Row(
         children: [
-          // LEFT: MAIN DASHBOARD
+          // LEFT: MAIN FOCUS AREA
           Expanded(
             flex: 3,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // CHANGING LOGO: Tap this to cycle styles
+                // TAP THE LOGO TO CHANGE STYLE
                 GestureDetector(
                   onTap: () => setState(() => _avatarIndex = (_avatarIndex + 1) % _phantomStyles.length),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _isActive ? Colors.cyanAccent.withOpacity(0.05) : Colors.transparent,
-                    ),
-                    child: Icon(_phantomStyles[_avatarIndex], size: 80, color: Colors.cyanAccent),
-                  ),
+                  child: Icon(_phantomStyles[_avatarIndex], size: 80, color: Colors.cyanAccent),
                 ),
                 const Text("PHANTOMS", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 8, color: Colors.cyanAccent)),
                 const SizedBox(height: 60),
-                
-                // TIMER TEXT
                 Text(timeStr, style: const TextStyle(fontSize: 120, fontWeight: FontWeight.w100, color: Colors.white)),
-                
                 const SizedBox(height: 60),
-                
-                // ACTION BUTTON
                 ElevatedButton(
                   onPressed: _toggleSession,
                   style: ElevatedButton.styleFrom(
@@ -120,7 +107,6 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
             ),
           ),
           
-          // DIVIDER
           Container(width: 0.5, color: Colors.white10),
 
           // RIGHT: GHOSTS & HISTORY SIDEBAR
