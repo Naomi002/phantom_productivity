@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart'; // New Audio Engine
+import 'package:audioplayers/audioplayers.dart';
 
 void main() {
   runApp(const PhantomApp());
@@ -38,62 +38,67 @@ class _DashboardState extends State<Dashboard> {
   int _avatarIndex = 0;
   final List<String> _focusHistory = [];
 
-  // Audio Logic
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  // Using a professional royalty-free ambient stream for testing
-  final String _lofiUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+  // Expert Audio Configuration
+  final AudioPlayer _player = AudioPlayer();
+  // Using a direct, high-speed MP3 link that works well in Chrome
+  final String _audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 
   final List<IconData> _phantomStyles = [Icons.blur_on, Icons.wb_sunny_outlined, Icons.all_inclusive, Icons.auto_awesome];
-  final List<Map<String, String>> _onlineGhosts = [
-    {"name": "Phantom_Alpha", "status": "Deep Focus"},
-    {"name": "Ghost_User_99", "status": "Steady"},
-    {"name": "Nawrose_Dev", "status": "Coding..."},
-  ];
 
-  void _toggleTimer() async {
+  @override
+  void initState() {
+    super.initState();
+    // Pre-setting the volume and source for a smoother start
+    _player.setReleaseMode(ReleaseMode.loop); // Keep the music looping!
+    _player.setVolume(0.5); 
+  }
+
+  void _toggleSession() async {
     if (_isActive) {
       _timer?.cancel();
-      await _audioPlayer.pause(); // Pause music
+      await _player.pause(); // Stop the music
       setState(() => _isActive = false);
     } else {
       setState(() => _isActive = true);
-      await _audioPlayer.play(UrlSource(_lofiUrl)); // Start Lo-Fi
+      
+      // Start Timer
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        setState(() {
-          if (_seconds > 0) {
-            _seconds--;
-          } else {
-            _timer?.cancel();
-            _isActive = false;
-            _audioPlayer.stop();
-            _addHistory();
-            _showRewardDialog();
-          }
-        });
+        if (_seconds > 0) {
+          setState(() => _seconds--);
+        } else {
+          _timer?.cancel();
+          _player.stop();
+          _showReward();
+        }
       });
+
+      // Start Music with Error Handling
+      try {
+        await _player.play(UrlSource(_audioUrl));
+      } catch (e) {
+        debugPrint("Audio Playback Error: $e");
+      }
     }
   }
 
-  void _addHistory() {
-    final timestamp = "${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}";
-    _focusHistory.insert(0, "Focused Session @ $timestamp");
-  }
-
-  void _showRewardDialog() {
+  void _showReward() {
+    setState(() {
+      _isActive = false;
+      _focusHistory.insert(0, "Completed @ ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}");
+    });
     showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E293B),
-        title: const Text("Deep Work Complete! 👻", style: TextStyle(color: Colors.cyanAccent)),
-        content: const Text("Music stopped. Energy saved. Great job, Nabila."),
+        title: const Text("Success, Nabila! 👻", style: TextStyle(color: Colors.cyanAccent)),
+        content: const Text("Focus session recorded. Music paused."),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               setState(() => _seconds = 1500);
             },
-            child: const Text("READY", style: TextStyle(color: Colors.cyanAccent)),
+            child: const Text("RESET", style: TextStyle(color: Colors.cyanAccent)),
           ),
         ],
       ),
@@ -102,52 +107,46 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void dispose() {
-    _timer?.cancel(); 
-    _audioPlayer.dispose(); // Always clean up audio memory
+    _timer?.cancel();
+    _player.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    String timeDisplay = "${(_seconds ~/ 60).toString().padLeft(2, '0')}:${(_seconds % 60).toString().padLeft(2, '0')}";
+
     return Scaffold(
       body: Row(
         children: [
           Expanded(
             flex: 3,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Spacer(),
                 GestureDetector(
                   onTap: () => setState(() => _avatarIndex = (_avatarIndex + 1) % _phantomStyles.length),
                   child: Icon(_phantomStyles[_avatarIndex], size: 100, color: Colors.cyanAccent),
                 ),
                 const SizedBox(height: 10),
                 const Text("PHANTOMS", style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 8, color: Colors.cyanAccent)),
+                const SizedBox(height: 50),
+                Text(timeDisplay, style: const TextStyle(fontSize: 120, fontWeight: FontWeight.w100, color: Colors.white)),
                 const SizedBox(height: 40),
-                Text(
-                  "${(_seconds ~/ 60).toString().padLeft(2, '0')}:${(_seconds % 60).toString().padLeft(2, '0')}",
-                  style: const TextStyle(fontSize: 100, fontWeight: FontWeight.w100, color: Colors.white),
-                ),
-                const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: _toggleTimer,
+                  onPressed: _toggleSession,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.cyanAccent.withOpacity(0.1),
-                    side: const BorderSide(color: Colors.cyanAccent, width: 0.5),
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                    side: const BorderSide(color: Colors.cyanAccent),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                   ),
-                  child: Text(_isActive ? "PAUSE MUSIC & TIMER" : "START FOCUS MODE", style: const TextStyle(color: Colors.cyanAccent)),
+                  child: Text(_isActive ? "PAUSE FOCUS" : "START FOCUS", style: const TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold)),
                 ),
-                const Spacer(),
-                // History log at bottom
-                Container(
-                  height: 100,
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: ListView.builder(
-                    itemCount: _focusHistory.length,
-                    itemBuilder: (context, index) => Text("• ${_focusHistory[index]}", style: const TextStyle(color: Colors.white24, fontSize: 12)),
+                if (_isActive) 
+                  const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Text("🎵 Audio Playing...", style: TextStyle(color: Colors.white24, fontSize: 12)),
                   ),
-                ),
               ],
             ),
           ),
@@ -156,7 +155,19 @@ class _DashboardState extends State<Dashboard> {
             flex: 1,
             child: Container(
               color: const Color(0xFF0F172A),
-              child: Center(child: Text("GHOSTS ONLINE: ${_onlineGhosts.length}", style: const TextStyle(color: Colors.cyanAccent, fontSize: 10))),
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  const Text("LOG", style: TextStyle(color: Colors.cyanAccent, fontSize: 12, letterSpacing: 2)),
+                  const Divider(color: Colors.white10),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _focusHistory.length,
+                      itemBuilder: (context, index) => Text("• ${_focusHistory[index]}", style: const TextStyle(color: Colors.white24, fontSize: 11)),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
