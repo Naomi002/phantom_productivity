@@ -34,9 +34,11 @@ class _DashboardState extends State<Dashboard> {
   int _seconds = 1500; 
   Timer? _timer;
   bool _isActive = false;
-  
-  // New Identity State
   int _avatarIndex = 0;
+  
+  // Data for Session History
+  final List<String> _focusHistory = [];
+
   final List<IconData> _phantomStyles = [
     Icons.blur_on,
     Icons.wb_sunny_outlined,
@@ -52,15 +54,7 @@ class _DashboardState extends State<Dashboard> {
   ];
 
   void _cycleAvatar() {
-    setState(() {
-      _avatarIndex = (_avatarIndex + 1) % _phantomStyles.length;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Phantom Style Updated! ✨"),
-        duration: Duration(milliseconds: 500),
-      ),
-    );
+    setState(() => _avatarIndex = (_avatarIndex + 1) % _phantomStyles.length);
   }
 
   void _toggleTimer() {
@@ -76,11 +70,18 @@ class _DashboardState extends State<Dashboard> {
           } else {
             _timer?.cancel();
             _isActive = false;
+            _addHistory(); // Record the win!
             _showRewardDialog();
           }
         });
       });
     }
+  }
+
+  void _addHistory() {
+    final now = DateTime.now();
+    final timestamp = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+    _focusHistory.insert(0, "Completed 25m Session at $timestamp");
   }
 
   void _sendPulse(String name) {
@@ -100,14 +101,14 @@ class _DashboardState extends State<Dashboard> {
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E293B),
         title: const Text("Session Complete! 👻", style: TextStyle(color: Colors.cyanAccent)),
-        content: const Text("Great work, Nabila. You've earned 10 Energy points."),
+        content: const Text("Energy Collected. Your Focus History has been updated, Nabila."),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               setState(() => _seconds = 1500);
             },
-            child: const Text("COLLECT", style: TextStyle(color: Colors.cyanAccent)),
+            child: const Text("CONTINUE", style: TextStyle(color: Colors.cyanAccent)),
           ),
         ],
       ),
@@ -125,28 +126,24 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       body: Row(
         children: [
+          // MAIN PANEL
           Expanded(
             flex: 3,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // INTERACTIVE AVATAR
+                const Spacer(),
                 GestureDetector(
                   onTap: _cycleAvatar,
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: Icon(_phantomStyles[_avatarIndex], size: 100, color: Colors.cyanAccent),
-                  ),
+                  child: Icon(_phantomStyles[_avatarIndex], size: 100, color: Colors.cyanAccent),
                 ),
                 const SizedBox(height: 10),
                 const Text("PHANTOMS", style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 8, color: Colors.cyanAccent)),
-                const Text("Tap icon to change your Phantom style", style: TextStyle(color: Colors.white24, fontSize: 10)),
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
                 Text(
                   "${(_seconds ~/ 60).toString().padLeft(2, '0')}:${(_seconds % 60).toString().padLeft(2, '0')}",
                   style: const TextStyle(fontSize: 100, fontWeight: FontWeight.w100, color: Colors.white),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: _toggleTimer,
                   style: ElevatedButton.styleFrom(
@@ -156,10 +153,39 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   child: Text(_isActive ? "PAUSE" : "START FOCUSING", style: const TextStyle(color: Colors.cyanAccent)),
                 ),
+                const Spacer(),
+                
+                // NEW: FOCUS HISTORY LIST
+                Container(
+                  height: 150,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("FOCUS HISTORY", style: TextStyle(color: Colors.white24, fontSize: 10, letterSpacing: 2)),
+                      const Divider(color: Colors.white10),
+                      Expanded(
+                        child: _focusHistory.isEmpty 
+                          ? const Center(child: Text("No sessions yet today.", style: TextStyle(color: Colors.white10, fontSize: 12)))
+                          : ListView.builder(
+                              itemCount: _focusHistory.length,
+                              itemBuilder: (context, index) => Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                child: Text("• ${_focusHistory[index]}", style: const TextStyle(color: Colors.white60, fontSize: 12)),
+                              ),
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
+          
           Container(width: 0.5, color: Colors.white10),
+          
+          // GHOST SIDEBAR
           Expanded(
             flex: 1,
             child: Container(
@@ -177,13 +203,9 @@ class _DashboardState extends State<Dashboard> {
                         final ghost = _onlineGhosts[index];
                         return ListTile(
                           onTap: () => _sendPulse(ghost['name']!),
-                          leading: const CircleAvatar(
-                            backgroundColor: Colors.white10,
-                            child: Icon(Icons.person_outline, size: 20, color: Colors.white30),
-                          ),
+                          leading: const Icon(Icons.person_outline, size: 20, color: Colors.white30),
                           title: Text(ghost['name']!, style: const TextStyle(fontSize: 13, color: Colors.white70)),
                           subtitle: Text(ghost['status']!, style: const TextStyle(fontSize: 10, color: Colors.cyanAccent)),
-                          trailing: const Icon(Icons.bolt, size: 16, color: Colors.white10),
                         );
                       },
                     ),
