@@ -35,11 +35,12 @@ class _DashboardState extends State<Dashboard> {
   Timer? _timer;
   bool _isActive = false;
 
-  // Mock Data for "Ghosts" online
+  // Professional Data Structure for Ghosts
   final List<Map<String, String>> _onlineGhosts = [
-    {"name": "Phantom_Alpha", "status": "Deep Focus", "time": "12:04"},
-    {"name": "Ghost_User_99", "status": "Steady", "time": "05:22"},
-    {"name": "Nawrose_Dev", "status": "Focusing", "time": "19:45"},
+    {"name": "Phantom_Alpha", "status": "Deep Focus"},
+    {"name": "Ghost_User_99", "status": "Steady"},
+    {"name": "Nawrose_Dev", "status": "Coding..."},
+    {"name": "Shadow_Student", "status": "Reading"},
   ];
 
   void _toggleTimer() {
@@ -62,27 +63,36 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+  // Expert UI: SnackBar notification for interaction
+  void _sendPulse(String name) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.cyanAccent,
+        content: Text("Motivation Pulse sent to $name! ⚡", 
+          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   void _showRewardDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF1E293B),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text("Session Complete! 👻", style: TextStyle(color: Colors.cyanAccent)),
-          content: const Text("Your Phantom has gained +10 Focus Energy. Great work, Nabila."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                setState(() => _seconds = 1500);
-              },
-              child: const Text("COLLECT ENERGY", style: TextStyle(color: Colors.cyanAccent)),
-            ),
-          ],
-        );
-      },
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        title: const Text("Session Complete! 👻", style: TextStyle(color: Colors.cyanAccent)),
+        content: const Text("Great work, Nabila. You've earned 10 Energy points."),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() => _seconds = 1500);
+            },
+            child: const Text("COLLECT", style: TextStyle(color: Colors.cyanAccent)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -95,10 +105,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Row allows us to put the Timer and the Ghost List side-by-side
       body: Row(
         children: [
-          // LEFT SIDE: The Main Timer Area
+          // MAIN FOCUS AREA
           Expanded(
             flex: 3,
             child: Column(
@@ -120,15 +129,16 @@ class _DashboardState extends State<Dashboard> {
                     side: const BorderSide(color: Colors.cyanAccent, width: 0.5),
                     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                   ),
-                  child: Text(_isActive ? "PAUSE" : "START FOCUSING"),
+                  child: Text(_isActive ? "PAUSE" : "START FOCUSING", style: const TextStyle(color: Colors.cyanAccent)),
                 ),
               ],
             ),
           ),
           
-          // RIGHT SIDE: The Ghost Sidebar (Vertical Divider)
+          // SEPARATOR LINE
           Container(width: 0.5, color: Colors.white10),
           
+          // INTERACTIVE GHOST SIDEBAR
           Expanded(
             flex: 1,
             child: Container(
@@ -136,18 +146,23 @@ class _DashboardState extends State<Dashboard> {
               child: Column(
                 children: [
                   const Padding(
-                    padding: EdgeInsets.all(20.0),
+                    padding: EdgeInsets.symmetric(vertical: 30),
                     child: Text("LIVE GHOSTS", style: TextStyle(color: Colors.cyanAccent, fontSize: 12, letterSpacing: 2, fontWeight: FontWeight.bold)),
                   ),
                   Expanded(
                     child: ListView.builder(
                       itemCount: _onlineGhosts.length,
                       itemBuilder: (context, index) {
+                        final ghost = _onlineGhosts[index];
                         return ListTile(
-                          leading: const Icon(Icons.person_outline, color: Colors.white30),
-                          title: Text(_onlineGhosts[index]['name']!, style: const TextStyle(fontSize: 14, color: Colors.white70)),
-                          subtitle: Text(_onlineGhosts[index]['status']!, style: const TextStyle(fontSize: 10, color: Colors.cyanAccent)),
-                          trailing: const Icon(Icons.bolt, size: 16, color: Colors.amberAccent),
+                          onTap: () => _sendPulse(ghost['name']!), // INTERACTION
+                          leading: const CircleAvatar(
+                            backgroundColor: Colors.white10,
+                            child: Icon(Icons.person_outline, size: 20, color: Colors.white30),
+                          ),
+                          title: Text(ghost['name']!, style: const TextStyle(fontSize: 13, color: Colors.white70)),
+                          subtitle: Text(ghost['status']!, style: const TextStyle(fontSize: 10, color: Colors.cyanAccent)),
+                          trailing: const Icon(Icons.bolt, size: 16, color: Colors.white10),
                         );
                       },
                     ),
